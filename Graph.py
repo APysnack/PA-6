@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
-import numpy as np;np.random.seed(5)
+import numpy as np;
 
 def build_graph(seq_1, seq_2, graph, arrow_map, solution):
     plt.rcParams["figure.figsize"] = 4,5
@@ -26,15 +26,7 @@ def build_graph(seq_1, seq_2, graph, arrow_map, solution):
         for j in range(n):
             v[i,j] = graph[i][j]
 
-    my_list = []
-
-    # first 2 cols designate coordinates, unsure about last 2
-    arrows = np.array([[1, 1, 4, 4], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0],
-                       [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0],
-                       [0, 0, 0, 0], [0, 0, 0, 0]])
-
-
-    #Plot
+    # plot
     fig, ax=plt.subplots()
     ax.set_xlim(-1.5, v.shape[1]-.5 )
     ax.set_ylim(-1.5, v.shape[0]-.5 )
@@ -53,13 +45,19 @@ def build_graph(seq_1, seq_2, graph, arrow_map, solution):
                     left="off", right="off", labelbottom='off', labelleft='off')
     ax.grid(True, which='minor')
 
+    # arrow properties
     arrowprops=dict(facecolor='blue',alpha=0.5, lw=0, width=2, connectionstyle="arc3")
     arrowprops_2=dict(facecolor='red',alpha=0.5, lw=0, width=2, connectionstyle="arc3")
 
+    # places arrows at the locations specified by the arrow map (all cells)
     for cell in arrow_map:
         directions = arrow_map[cell]
+        # dictionary key that stores the xy coordinates (a=y, b=x)
         a, b = cell[0], cell[1]
+
+        # note: xy is the coordinate of the arrow head, xytext is the tail location
         for dir in directions:
+            # checks the values for each key and annotates with the appropriate arrow
             if dir == 'diagonal':
                 ax.annotate("", xy=[b, a], xytext=[b-1, a-1], arrowprops=arrowprops)
             elif dir == 'right':
@@ -68,8 +66,13 @@ def build_graph(seq_1, seq_2, graph, arrow_map, solution):
                 ax.annotate("", xy=[b, a], xytext=[b, a - 1], arrowprops=arrowprops)
 
 
+    # places arrows at the locations specified by the solution key
     for key in solution:
+
+        # dictionary key that stores the xy coordinates (a=y, b=x)
         a, b = key[0], key[1]
+
+        # checks the values for each key and annotates with the appropriate arrow
         if solution[key] == 'diagonal':
             ax.annotate("", xy=[b, a], xytext=[b - 1, a - 1], arrowprops=arrowprops_2)
         elif solution[key] == 'right':
