@@ -1,8 +1,10 @@
+import Graph
+
 class SequenceAlignment(object):
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.solution = []
+        self.solution = {}
         self.match_val = 5
         self.mismatch_val = -3
         self.gap_val = -2
@@ -31,17 +33,28 @@ class SequenceAlignment(object):
 
         best_choice = max(insert, align, delete)
 
+        # if best_choice == insert:
+        #     self.solution.append("insert_" + str(self.y[n - 1]))
+        #     return self.find_solution(OPT, m, n - 1)
+        #
+        # if best_choice == align:
+        #     self.solution.append("align_" + str(self.y[n - 1]))
+        #     return self.find_solution(OPT, m - 1, n - 1)
+        #
+        # if best_choice == delete:
+        #     self.solution.append("remove_" + str(self.x[m - 1]))
+        #     return self.find_solution(OPT, m - 1, n)
+
         if best_choice == insert:
-            self.solution.append("insert_" + str(self.y[n - 1]))
+            self.solution[(m, n)] = 'right'
             return self.find_solution(OPT, m, n - 1)
-
-        if best_choice == align:
-            self.solution.append("align_" + str(self.y[n - 1]))
+        elif best_choice == align:
+            self.solution[(m, n)] = 'diagonal'
             return self.find_solution(OPT, m - 1, n - 1)
-
-        if best_choice == delete:
-            self.solution.append("remove_" + str(self.x[m - 1]))
+        elif best_choice == delete:
+            self.solution[(m, n)] = 'down'
             return self.find_solution(OPT, m - 1, n)
+
 
 
     def solve_cell(self, OPT, m, n):
@@ -102,28 +115,19 @@ class SequenceAlignment(object):
                     OPT[i][j - 1] + self.gap_val,
                 )
 
-        for line in OPT:
-            print(line)
-
         self.find_solution(OPT, m, n)
 
         for i in range(m+1):
             for j in range(n+1):
                 self.solve_cell(OPT, i, j)
 
-        print(self.cell_dict)
-
-        return OPT[m][n], self.solution[::-1]
+        return OPT, self.solution, self.cell_dict
 
 
 if __name__ == '__main__':
-    # x = 'TGACGTGC'
-    # y = 'TCGACGTCA'
-    path_list = []
+    # note that OPT[m][n] is the number solution
     y = 'ACTAA'
     x = 'CCTT'
-    print('We we want to transform: ' + x + ' to: ' + y)
     sqalign = SequenceAlignment(x, y)
-    min_edit, b = sqalign.alignment()
-    print('Minimum amount of edit steps are: ' + str(min_edit))
-    print(b)
+    graph, solution, arrow_map = sqalign.alignment()
+    Graph.build_graph(y, x, graph, arrow_map, solution)
