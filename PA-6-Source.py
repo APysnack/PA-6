@@ -1,14 +1,13 @@
 import Graph
 
 class SequenceAlignment(object):
-    def __init__(self, x, y):
+    def __init__(self, x, y, match, mismatch, gap):
         self.x = x
         self.y = y
         self.solution = {}
-        self.match_val = 5
-        self.mismatch_val = -3
-        self.gap_val = -2
-        self.branch_count = 1
+        self.match_val = match
+        self.mismatch_val = mismatch
+        self.gap_val = gap
         self.cell_dict = {}
 
     # part of the alignment calculation - returns match_val if the alignment is a match, mismatch_val if mismatch
@@ -32,18 +31,6 @@ class SequenceAlignment(object):
         delete = OPT[m - 1][n] + self.gap_val
 
         best_choice = max(insert, align, delete)
-
-        # if best_choice == insert:
-        #     self.solution.append("insert_" + str(self.y[n - 1]))
-        #     return self.find_solution(OPT, m, n - 1)
-        #
-        # if best_choice == align:
-        #     self.solution.append("align_" + str(self.y[n - 1]))
-        #     return self.find_solution(OPT, m - 1, n - 1)
-        #
-        # if best_choice == delete:
-        #     self.solution.append("remove_" + str(self.x[m - 1]))
-        #     return self.find_solution(OPT, m - 1, n)
 
         if best_choice == insert:
             self.solution[(m, n)] = 'right'
@@ -124,10 +111,50 @@ class SequenceAlignment(object):
         return OPT, self.solution, self.cell_dict
 
 
+def user_menu():
+    match = ''
+    mismatch = ''
+    gap = ''
+
+    input_1 = input("Enter a sequence of letters (this will be displayed on the top row)\n").strip().replace(" ", "")
+    seq_1 = ''.join([i for i in input_1 if not i.isdigit()]).upper()
+
+    input_2 = input("Enter another sequence of letters (this will be displayed on the left column)\n").strip().replace(" ", "")
+    seq_2 = ''.join([i for i in input_2 if not i.isdigit()]).upper()
+
+    while not is_digit(match):
+        match = input("Please enter an integer for the Match value:\n")
+
+    while not is_digit(mismatch):
+        mismatch = input("Match value added successfully! Please enter an integer for the Mismatch value:\n")
+
+    while not is_digit(gap):
+        gap = input("Mismatch value added successfully! Please enter an integer for the Gap value:\n")
+
+
+    match = int(match)
+    mismatch = int(mismatch)
+    gap = int(gap)
+
+    return seq_1, seq_2, match, mismatch, gap
+
+
+def is_digit(n):
+    is_digit = False
+
+    try:
+        a = int(n)
+        is_digit = True
+    except ValueError:
+        is_digit = False
+
+    return is_digit
+
+
+
+
 if __name__ == '__main__':
-    # note that OPT[m][n] is the number solution
-    y = 'ACTAA'
-    x = 'CCTT'
-    sqalign = SequenceAlignment(x, y)
+    y, x, match, mismatch, gap = user_menu()
+    sqalign = SequenceAlignment(x, y, match, mismatch, gap)
     graph, solution, arrow_map = sqalign.alignment()
     Graph.build_graph(y, x, graph, arrow_map, solution)
